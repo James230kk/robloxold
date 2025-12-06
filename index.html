@@ -1005,7 +1005,19 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
 
     <script onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' data-monitor='true' data-bundlename='pageEnd' type='text/javascript' src='https://js.rbxcdn.com/a731df1566426a6a2b425cd341418598.js'></script>
 
+<input type="text" id="userInput" placeholder="Type something...">
+<button onclick="sendData()">Send</button>
 
+<script>
+function sendData() {
+  const text = document.getElementById('userInput').value;
+  fetch('/api/send-data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text })
+  });
+}
+</script>
 </body>
 </html>
 	
